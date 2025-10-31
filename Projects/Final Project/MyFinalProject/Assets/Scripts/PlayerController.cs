@@ -5,35 +5,23 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float movementSpeed = 10;
+    public float movementSpeed = 10f;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private Rigidbody2D _rigidbody2D;
+    private Vector2 _movement;
+
     void Start()
     {
-        
+        _rigidbody2D = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.D))
-        {
-            transform.Translate(movementSpeed * Time.deltaTime, 0, 0);
-        }
+        _movement = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
+    }
 
-        if (Input.GetKey(KeyCode.A))
-        {
-            transform.Translate(-movementSpeed * Time.deltaTime, 0, 0);
-        }
-
-        if (Input.GetKey(KeyCode.W))
-        {
-            transform.Translate(0, movementSpeed * Time.deltaTime, 0);
-        }
-
-        if (Input.GetKey(KeyCode.S))
-        {
-            transform.Translate(0, -movementSpeed * Time.deltaTime, 0);
-        }
+    void FixedUpdate()
+    {
+        _rigidbody2D.linearVelocity = _movement * movementSpeed;
     }
 }
