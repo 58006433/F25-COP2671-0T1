@@ -15,7 +15,7 @@ public class CropBlock
     public SeedPacket seed;
     public int growthStage = 0;            // Stage 0–3
     public float growthTimer = 0f;         // Time until next stage
-    public bool isOccupied => seed != null;
+    public bool isOccupied;
 
     // Reference to crop GameObject in the world
     public GameObject cropObject;
