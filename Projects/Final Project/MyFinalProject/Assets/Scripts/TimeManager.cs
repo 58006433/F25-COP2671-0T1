@@ -16,7 +16,7 @@ public class TimeManager : MonoBehaviour
         // Advance time
         timeOfDay += 24f / (dayLengthInMinutes * 60f) * Time.deltaTime;
 
-        if (timeOfDay >= 24f)
-            timeOfDay -= 24f;
+        if (timeOfDay >= 24f) timeOfDay -= 24f;
+        
     }
 }

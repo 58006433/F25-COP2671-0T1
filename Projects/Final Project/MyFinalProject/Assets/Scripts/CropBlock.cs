@@ -1,81 +1,129 @@
 using UnityEngine;
 
-public class CropBlock : MonoBehaviour
+[System.Serializable]
+public class CropBlock
 {
-    public SeedPacket seedPacket;
-    public int currentStage = 0;
-    public float growthTimer = 0f;
-    public float growthDuration = 5f;
+    // Tile information
+    public Vector3Int cellPosition;
+    public Vector3 worldPosition;
+
+    // Soil status
+    public bool isTilled = false;
     public bool isWatered = false;
-    public bool isPlanted = false;
 
-    private SpriteRenderer spriteRenderer;
+    // Crop data
+    public SeedPacket seed;
+    public int growthStage = 0;            // Stage 0–3
+    public float growthTimer = 0f;         // Time until next stage
+    public bool isOccupied => seed != null;
 
-    private void Awake()
+    // Reference to crop GameObject in the world
+    public GameObject cropObject;
+
+    // constructor
+    public CropBlock(Vector3Int cell, Vector3 world)
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        cellPosition = cell;
+        worldPosition = world;
     }
 
-    private void Update()
-    {
-        if (isPlanted && isWatered)
-        {
-            growthTimer += Time.deltaTime;
-
-            if (growthTimer >= growthDuration)
-            {
-                AdvanceGrowthStage();
-                growthTimer = 0f;
-                isWatered = false;
-            }
-        }
-    }
-
+    // actions
     public void TillSoil()
     {
-        Debug.Log("Soil is tilled and ready!");
+        if (!isTilled)
+        {
+            isTilled = true;
+            Debug.Log("Soil tilled at " + cellPosition);
+        }
     }
 
     public void WaterSoil()
     {
         isWatered = true;
-        Debug.Log("Soil watered!");
+        Debug.Log("Soil watered at " + cellPosition);
     }
 
-    public void PlantSeed(SeedPacket seed)
+    public void PlantSeed(SeedPacket packet, GameObject cropPrefab)
     {
-        seedPacket = seed;
-        isPlanted = true;
-        currentStage = 0;
-        spriteRenderer.sprite = seed.growthSprites[currentStage];
-    }
+        if (!isTilled || seed != null)
+        {
+            Debug.Log("Cannot plant here.");
+            return;
+        }
 
-    public void AdvanceGrowthStage()
-    {
-        if (seedPacket == null) return;
+        seed = packet;
+        growthStage = 0;
+        growthTimer = packet.timePerStage;
 
-        currentStage++;
-        if (currentStage < seedPacket.growthSprites.Length)
-            spriteRenderer.sprite = seedPacket.growthSprites[currentStage];
-        else
-            Debug.Log($"{seedPacket.cropName} is ready to harvest!");
+        // spawn crop prefab in world
+        cropObject = Object.Instantiate(
+            cropPrefab,
+            worldPosition,
+            Quaternion.identity
+        );
+
+        CropRenderer renderer = cropObject.GetComponent<CropRenderer>();
+        renderer.Initialize(seed, this);
+
+        Debug.Log("Planted " + seed.cropName + " at " + cellPosition);
     }
 
     public void HarvestPlants()
     {
-        if (currentStage >= seedPacket.growthSprites.Length - 1)
+        if (seed == null || growthStage < seed.growthSprites.Length - 1)
         {
-            //Instantiate(seedPacket.harvestablePrefab, transform.position, Quaternion.identity);
-            ResetBlock();
+            Debug.Log("Crop not ready!");
+            return;
+        }
+
+        // call harvest on CropRenderer (spawns Harvestable prefab)
+        cropObject.GetComponent<CropRenderer>().Harvest();
+
+        // reset tile
+        seed = null;
+        cropObject = null;
+        growthStage = 0;
+        growthTimer = 0f;
+        isWatered = false;
+
+        Debug.Log("Crop harvested at " + cellPosition);
+    }
+
+    // growth logic
+    public void UpdateGrowth(float deltaTime)
+    {
+        if (seed == null) return;
+        if (!isWatered) return; // no water = no growth
+
+        growthTimer -= deltaTime;
+
+        if (growthTimer <= 0f)
+        {
+            AdvanceGrowthStage();
+            isWatered = false; // Requires new watering each stage
         }
     }
 
-    private void ResetBlock()
+    private void AdvanceGrowthStage()
     {
-        isPlanted = false;
-        isWatered = false;
-        currentStage = 0;
-        seedPacket = null;
-        spriteRenderer.sprite = null;
+        if (growthStage < seed.growthSprites.Length - 1)
+        {
+            growthStage++;
+            growthTimer = seed.timePerStage;
+
+            // Update crop sprite
+            if (cropObject != null)
+            {
+                CropRenderer renderer = cropObject.GetComponent<CropRenderer>();
+                renderer.growthStage = growthStage;
+                renderer.UpdateSprite();
+            }
+
+            Debug.Log($"Crop at {cellPosition} grew to stage {growthStage}");
+        }
+        else
+        {
+            Debug.Log("Crop fully grown!");
+        }
     }
 }

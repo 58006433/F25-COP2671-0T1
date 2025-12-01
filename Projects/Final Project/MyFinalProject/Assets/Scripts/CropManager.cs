@@ -4,48 +4,103 @@ using UnityEngine.Tilemaps;
 
 public class CropManager : MonoBehaviour
 {
-    [SerializeField] private Tilemap farmingTilemap;
+    [Header("References")]
+    public Tilemap farmingTilemap;
+    public GameObject cropPrefab;
 
-    // Grid storing crops by tile position
-    private Dictionary<Vector3Int, CropBlock> plantedCrops = new Dictionary<Vector3Int, CropBlock>();
+    // 2D grid storing crop blocks for each tile
+    private CropBlock[,] cropGrid;
 
-    private void Start()
+    // Track planted crops (easy update + growth)
+    public List<CropBlock> plantedCrops = new List<CropBlock>();
+
+    // Grid size info
+    private int width;
+    private int height;
+    private Vector3Int origin;
+
+    void Start()
     {
         CreateGridUsingTilemap(farmingTilemap);
     }
 
+    // create grid from tilemap
     public void CreateGridUsingTilemap(Tilemap tilemap)
     {
+        tilemap.CompressBounds();
+
+        origin = tilemap.cellBounds.min;
+        width = tilemap.cellBounds.size.x;
+        height = tilemap.cellBounds.size.y;
+
+        cropGrid = new CropBlock[width, height];
+
         foreach (var pos in tilemap.cellBounds.allPositionsWithin)
         {
             if (!tilemap.HasTile(pos)) continue;
 
-            Vector3 worldPos = tilemap.CellToWorld(pos);
+            Vector3 worldPos = tilemap.CellToWorld(pos) + tilemap.tileAnchor;
+
             CreateGridBlock(tilemap, pos, worldPos, null);
         }
+
+        Debug.Log("Crop grid successfully generated.");
     }
 
-    public void CreateGridBlock(Tilemap tilemap, Vector3Int location, Vector3 position, CropBlock cropBlock)
+    // create invividual grid blocks
+    public void CreateGridBlock(Tilemap tilemap, Vector3Int location, Vector3 position, CropBlock gridBlock)
     {
-        // You could create a CropBlock component dynamically or assign it later when a crop is planted.
-        if (!plantedCrops.ContainsKey(location))
-            plantedCrops.Add(location, cropBlock);
+        int x = location.x - origin.x;
+        int y = location.y - origin.y;
+
+        // Create new block
+        CropBlock newBlock = new CropBlock(location, position);
+
+        cropGrid[x, y] = newBlock;
     }
 
-    public void AddToPlantedCrops(Vector3Int position, CropBlock cropBlock)
+    // get block from tile position
+    public CropBlock GetBlockAtCell(Vector3Int cellPos)
     {
-        plantedCrops[position] = cropBlock;
+        int x = cellPos.x - origin.x;
+        int y = cellPos.y - origin.y;
+
+        if (x < 0 || y < 0 || x >= width || y >= height)
+            return null;
+
+        return cropGrid[x, y];
     }
 
-    public void RemoveFromPlantedCrops(Vector3Int position)
+    public void PlantCrop(Vector3Int cellPos, SeedPacket seed)
+{
+    CropBlock block = GetBlockAtCell(cellPos);
+    if (block == null || block.isOccupied) return;
+
+    Vector3 worldPos = farmingTilemap.GetCellCenterWorld(cellPos);
+
+    GameObject obj = Instantiate(cropPrefab, worldPos, Quaternion.identity);
+    block.cropObject = obj;
+    block.seed = seed;
+    block.isOccupied = true;
+
+    // Initialize CropRenderer
+    CropRenderer renderer = obj.GetComponent<CropRenderer>();
+    renderer.Initialize(seed, block);
+
+    AddToPlantedCrops(block);
+}
+
+    // add planted crop
+    public void AddToPlantedCrops(CropBlock cropBlock)
     {
-        if (plantedCrops.ContainsKey(position))
-            plantedCrops.Remove(position);
+        if (!plantedCrops.Contains(cropBlock))
+            plantedCrops.Add(cropBlock);
     }
 
-    public CropBlock GetCropBlock(Vector3Int position)
+    // remove planted crop
+    public void RemoveFromPlantedCrops(CropBlock cropBlock)
     {
-        plantedCrops.TryGetValue(position, out var block);
-        return block;
+        if (plantedCrops.Contains(cropBlock))
+            plantedCrops.Remove(cropBlock);
     }
 }

@@ -1,10 +1,17 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewSeedPacket", menuName = "Farming/Seed Packet")]
+[CreateAssetMenu(fileName = "New Seed Packet", menuName = "Farming/Seed Packet")]
 public class SeedPacket : ScriptableObject
 {
     public string cropName;
-    public Sprite[] growthSprites; // 0: seed, 1–3: growth stages
+    public float timePerStage = 20f; // seconds per growth stage
+
+    [Header("Growth Stages")]
+    public Sprite[] growthSprites; // stage 0 → 4
+
+    [Header("UI Image")]
     public Sprite coverImage;
-    //public Harvestable harvestablePrefab;
+
+    [Header("Harvestable Prefab")]
+    public Harvestable harvestablePrefab;
 }
