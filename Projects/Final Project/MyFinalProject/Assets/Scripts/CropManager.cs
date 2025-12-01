@@ -21,20 +21,20 @@ public class CropManager : MonoBehaviour
     private Vector3Int origin;
 
     // Sunrise growth trigger control
-    private bool sunriseGrowthApplied = false;   // NEW
+    private bool sunriseGrowthApplied = false; 
 
     void Start()
     {
         CreateGridUsingTilemap(farmingTilemap);
     }
 
-    void Update()   // NEW
+    void Update()   
     {
         HandleDailyGrowth();
     }
 
     // day night growth cycle
-    private void HandleDailyGrowth()   // NEW
+    private void HandleDailyGrowth() 
     {
         float t = timeManager.timeOfDay;
 
