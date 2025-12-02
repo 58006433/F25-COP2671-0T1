@@ -29,11 +29,16 @@ public class CropRenderer : MonoBehaviour
     {
         if (!fullyGrown) return;
 
-        Instantiate(seed.harvestablePrefab, transform.position, Quaternion.identity);
+        Harvestable h = Instantiate(seed.harvestablePrefab, transform.position, Quaternion.identity);
+
+        // Assign item identity
+        if (seed.producedItem != null)
+            h.itemData = seed.producedItem;
 
         block.isOccupied = false;
         block.seed = null;
 
         Destroy(gameObject);
     }
+
 }

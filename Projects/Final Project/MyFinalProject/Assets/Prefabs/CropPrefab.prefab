@@ -101,5 +101,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 4639194649922912015}
-  seed: {fileID: 0}
+  seed: {fileID: 11400000, guid: c9f451ca0982b994bb7f3d6e968452c9, type: 2}
   growthStage: 0

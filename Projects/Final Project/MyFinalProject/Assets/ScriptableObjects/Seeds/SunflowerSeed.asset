@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fc85b7ee78b16d43a71955d4af462b5, type: 3}
+  m_Name: SunflowerSeed
+  m_EditorClassIdentifier: 
+  cropName: Sunflower
+  timePerStage: 20
+  growthSprites:
+  - {fileID: 5403710888501315245, guid: 3c0fd9e79fa04564cb25b27e59aceaac, type: 3}
+  - {fileID: -5824048891732118507, guid: 3c0fd9e79fa04564cb25b27e59aceaac, type: 3}
+  - {fileID: 6614768778416726700, guid: 3c0fd9e79fa04564cb25b27e59aceaac, type: 3}
+  - {fileID: 846023351496318078, guid: 3c0fd9e79fa04564cb25b27e59aceaac, type: 3}
+  coverImage: {fileID: -6163400531934313660, guid: 3c0fd9e79fa04564cb25b27e59aceaac, type: 3}
+  harvestablePrefab: {fileID: 147247342922295338, guid: 953f7469141a97349b2da7f5907a0b47, type: 3}
+  producedItem: {fileID: 11400000, guid: e8e2128150061684dbddcf2b6613b7cb, type: 2}

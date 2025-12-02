@@ -3,7 +3,7 @@ using UnityEngine;
 public class FarmingController : MonoBehaviour
 {
     public CropManager cropManager;
-    public Camera mainCamera;
+    public Transform player; // Assign Player Transform in Inspector
     public SeedPacket selectedSeed;
 
     private CropBlock selectedBlock;
@@ -29,22 +29,29 @@ public class FarmingController : MonoBehaviour
         UpdateSelectedBlock();
     }
 
+    // Instead of mouse, use player position to select the block
     void UpdateSelectedBlock()
     {
-        Vector3 worldPos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        Vector3Int cell = cropManager.farmingTilemap.WorldToCell(worldPos);
+        if (player == null) return;
 
+        Vector3Int cell = cropManager.farmingTilemap.WorldToCell(player.position);
         selectedBlock = cropManager.GetBlockAtCell(cell);
     }
 
     void TillSelectedSoil()
     {
-        selectedBlock?.TillSoil();
+        if (selectedBlock != null)
+            selectedBlock.TillSoil();
+        else
+            Debug.Log("No block under player to till.");
     }
 
     void WaterSelectedSoil()
     {
-        selectedBlock?.WaterSoil();
+        if (selectedBlock != null)
+            selectedBlock.WaterSoil();
+        else
+            Debug.Log("No block under player to water.");
     }
 
     void PlantSelectedSeed()
@@ -54,10 +61,17 @@ public class FarmingController : MonoBehaviour
             selectedBlock.PlantSeed(selectedSeed, cropManager.cropPrefab);
             cropManager.AddToPlantedCrops(selectedBlock);
         }
+        else
+        {
+            Debug.Log("No block under player to plant seed.");
+        }
     }
 
     void HarvestSelectedCrop()
     {
-        selectedBlock?.HarvestPlants();
+        if (selectedBlock != null)
+            selectedBlock.HarvestPlants();
+        else
+            Debug.Log("No block under player to harvest.");
     }
 }

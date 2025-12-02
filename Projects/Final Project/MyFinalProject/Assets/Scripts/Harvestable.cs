@@ -2,12 +2,14 @@ using UnityEngine;
 
 public class Harvestable : MonoBehaviour
 {
-    public string cropName;
-    public int amount = 1; // amount added to inventory (optional)
+    [Header("Item Data")]
+    public ItemData itemData;
 
     public void Collect()
     {
-        // later hook into your inventory
+        // Later: Add to inventory system
+        Debug.Log($"Collected: {itemData.itemName}");
+
         Destroy(gameObject);
     }
 }

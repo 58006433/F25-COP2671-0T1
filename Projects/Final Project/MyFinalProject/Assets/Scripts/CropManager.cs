@@ -16,13 +16,15 @@ public class CropManager : MonoBehaviour
     private Vector3Int origin;
 
     void Start()
-    {
-        CreateGridUsingTilemap(farmingTilemap);
+{
+    CreateGridUsingTilemap(farmingTilemap);
 
-        // Link to day-night event
-        DayNightEvents evt = FindObjectOfType<DayNightEvents>();
+    DayNightEvents evt = FindFirstObjectByType<DayNightEvents>();
+    if (evt != null)
         evt.OnSunrise.AddListener(ApplySunriseGrowth);
-    }
+    else
+        Debug.LogWarning("No DayNightEvents found in the scene.");
+}
 
     public void CreateGridUsingTilemap(Tilemap tilemap)
     {
