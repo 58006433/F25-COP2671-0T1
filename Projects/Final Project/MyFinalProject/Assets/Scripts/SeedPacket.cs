@@ -4,7 +4,7 @@ using UnityEngine;
 public class SeedPacket : ScriptableObject
 {
     public string cropName;
-    public float timePerStage = 20f;
+    public float timePerStage = 2f;
 
     [Header("Growth Stages")]
     public Sprite[] growthSprites;
