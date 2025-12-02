@@ -1,71 +1,29 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Collections.Generic;
 
 public class CropManager : MonoBehaviour
 {
     [Header("References")]
     public Tilemap farmingTilemap;
     public GameObject cropPrefab;
-    public TimeManager timeManager;
 
-    // 2D grid storing crop blocks for each tile
     private CropBlock[,] cropGrid;
-
-    // Track planted crops (easy update + growth)
     public List<CropBlock> plantedCrops = new List<CropBlock>();
 
-    // Grid size info
     private int width;
     private int height;
     private Vector3Int origin;
 
-    // Sunrise growth trigger control
-    private bool sunriseGrowthApplied = false; 
-
     void Start()
     {
         CreateGridUsingTilemap(farmingTilemap);
+
+        // Link to day-night event
+        DayNightEvents evt = FindObjectOfType<DayNightEvents>();
+        evt.OnSunrise.AddListener(ApplySunriseGrowth);
     }
 
-    void Update()   
-    {
-        HandleDailyGrowth();
-    }
-
-    // day night growth cycle
-    private void HandleDailyGrowth() 
-    {
-        float t = timeManager.timeOfDay;
-
-        // Sunrise is at 6:00
-        if (t >= 6f && t < 6.2f)
-        {
-            if (!sunriseGrowthApplied)
-            {
-                ApplySunriseGrowth();
-                sunriseGrowthApplied = true;
-            }
-        }
-        else if (t > 6.2f)
-        {
-            // Reset for next day
-            sunriseGrowthApplied = false;
-        }
-    }
-
-    private void ApplySunriseGrowth() 
-    {
-        foreach (CropBlock block in plantedCrops)
-        {
-            // Tell each crop block to try advancing one growth cycle
-            block.UpdateGrowth(1f);   
-        }
-
-        Debug.Log("Applied daily crop growth at sunrise.");
-    }
-
-    // creating the grid
     public void CreateGridUsingTilemap(Tilemap tilemap)
     {
         tilemap.CompressBounds();
@@ -76,30 +34,25 @@ public class CropManager : MonoBehaviour
 
         cropGrid = new CropBlock[width, height];
 
-        foreach (var pos in tilemap.cellBounds.allPositionsWithin)
+        foreach (Vector3Int pos in tilemap.cellBounds.allPositionsWithin)
         {
             if (!tilemap.HasTile(pos)) continue;
 
-            Vector3 worldPos = tilemap.CellToWorld(pos) + tilemap.tileAnchor;
-
+            Vector3 worldPos = tilemap.GetCellCenterWorld(pos);
             CreateGridBlock(tilemap, pos, worldPos, null);
         }
 
         Debug.Log("Crop grid successfully generated.");
     }
 
-    // create individual grid blocks
-    public void CreateGridBlock(Tilemap tilemap, Vector3Int location, Vector3 position, CropBlock gridBlock)
+    public void CreateGridBlock(Tilemap tilemap, Vector3Int location, Vector3 position, CropBlock block)
     {
         int x = location.x - origin.x;
         int y = location.y - origin.y;
 
-        CropBlock newBlock = new CropBlock(location, position);
-
-        cropGrid[x, y] = newBlock;
+        cropGrid[x, y] = new CropBlock(location, position);
     }
 
-    // get block from tile position
     public CropBlock GetBlockAtCell(Vector3Int cellPos)
     {
         int x = cellPos.x - origin.x;
@@ -111,35 +64,23 @@ public class CropManager : MonoBehaviour
         return cropGrid[x, y];
     }
 
-    //planting section
-    public void PlantCrop(Vector3Int cellPos, SeedPacket seed)
+    // Growth at sunrise
+    private void ApplySunriseGrowth()
     {
-        CropBlock block = GetBlockAtCell(cellPos);
-        if (block == null || block.isOccupied) return;
-
-        Vector3 worldPos = farmingTilemap.GetCellCenterWorld(cellPos);
-
-        GameObject obj = Instantiate(cropPrefab, worldPos, Quaternion.identity);
-        block.cropObject = obj;
-        block.seed = seed;
-        block.isOccupied = true;
-
-        CropRenderer renderer = obj.GetComponent<CropRenderer>();
-        renderer.Initialize(seed, block);
-
-        AddToPlantedCrops(block);
+        foreach (CropBlock block in plantedCrops)
+        {
+            block.UpdateGrowth(1f);
+        }
     }
 
-    //add or remove crops
-    public void AddToPlantedCrops(CropBlock cropBlock)
+    public void AddToPlantedCrops(CropBlock block)
     {
-        if (!plantedCrops.Contains(cropBlock))
-            plantedCrops.Add(cropBlock);
+        if (!plantedCrops.Contains(block))
+            plantedCrops.Add(block);
     }
 
-    public void RemoveFromPlantedCrops(CropBlock cropBlock)
+    public void RemoveFromPlantedCrops(CropBlock block)
     {
-        if (plantedCrops.Contains(cropBlock))
-            plantedCrops.Remove(cropBlock);
+        plantedCrops.Remove(block);
     }
 }

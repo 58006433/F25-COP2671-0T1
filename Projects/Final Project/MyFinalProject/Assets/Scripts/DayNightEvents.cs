@@ -24,7 +24,6 @@ public class DayNightEvents : MonoBehaviour
     {
         float t = timeManager.timeOfDay;
 
-        // Sunrise event
         if (!sunriseTriggered && t >= sunriseTime && t < sunriseTime + 0.1f)
         {
             OnSunrise?.Invoke();
@@ -32,7 +31,6 @@ public class DayNightEvents : MonoBehaviour
             sunsetTriggered = false;
         }
 
-        // Sunset event
         if (!sunsetTriggered && t >= sunsetTime && t < sunsetTime + 0.1f)
         {
             OnSunset?.Invoke();

@@ -3,31 +3,25 @@ using UnityEngine;
 [System.Serializable]
 public class CropBlock
 {
-    // Tile information
     public Vector3Int cellPosition;
     public Vector3 worldPosition;
 
-    // Soil status
     public bool isTilled = false;
     public bool isWatered = false;
 
-    // Crop data
     public SeedPacket seed;
-    public int growthStage = 0;            // Stage 0–3
-    public float growthTimer = 0f;         // Time until next stage
-    public bool isOccupied;
+    public int growthStage = 0;
+    public float growthTimer = 0f;
+    public bool isOccupied = false;
 
-    // Reference to crop GameObject in the world
     public GameObject cropObject;
 
-    // constructor
     public CropBlock(Vector3Int cell, Vector3 world)
     {
         cellPosition = cell;
         worldPosition = world;
     }
 
-    // actions
     public void TillSoil()
     {
         if (!isTilled)
@@ -39,31 +33,30 @@ public class CropBlock
 
     public void WaterSoil()
     {
-        isWatered = true;
-        Debug.Log("Soil watered at " + cellPosition);
+        if (isTilled)
+        {
+            isWatered = true;
+            Debug.Log("Soil watered at " + cellPosition);
+        }
     }
 
     public void PlantSeed(SeedPacket packet, GameObject cropPrefab)
     {
-        if (!isTilled || seed != null)
+        if (!isTilled || isOccupied)
         {
             Debug.Log("Cannot plant here.");
             return;
         }
 
         seed = packet;
+        isOccupied = true;
         growthStage = 0;
         growthTimer = packet.timePerStage;
 
-        // spawn crop prefab in world
-        cropObject = Object.Instantiate(
-            cropPrefab,
-            worldPosition,
-            Quaternion.identity
-        );
+        cropObject = Object.Instantiate(cropPrefab, worldPosition, Quaternion.identity);
 
-        CropRenderer renderer = cropObject.GetComponent<CropRenderer>();
-        renderer.Initialize(seed, this);
+        CropRenderer r = cropObject.GetComponent<CropRenderer>();
+        r.Initialize(seed, this);
 
         Debug.Log("Planted " + seed.cropName + " at " + cellPosition);
     }
@@ -76,31 +69,29 @@ public class CropBlock
             return;
         }
 
-        // call harvest on CropRenderer (spawns Harvestable prefab)
         cropObject.GetComponent<CropRenderer>().Harvest();
 
-        // reset tile
         seed = null;
         cropObject = null;
         growthStage = 0;
         growthTimer = 0f;
         isWatered = false;
+        isOccupied = false;
 
         Debug.Log("Crop harvested at " + cellPosition);
     }
 
-    // growth logic
     public void UpdateGrowth(float deltaTime)
     {
         if (seed == null) return;
-        if (!isWatered) return; // no water = no growth
+        if (!isWatered) return;
 
         growthTimer -= deltaTime;
 
         if (growthTimer <= 0f)
         {
             AdvanceGrowthStage();
-            isWatered = false; // Requires new watering each stage
+            isWatered = false;
         }
     }
 
@@ -111,19 +102,18 @@ public class CropBlock
             growthStage++;
             growthTimer = seed.timePerStage;
 
-            // Update crop sprite
             if (cropObject != null)
             {
-                CropRenderer renderer = cropObject.GetComponent<CropRenderer>();
-                renderer.growthStage = growthStage;
-                renderer.UpdateSprite();
+                CropRenderer r = cropObject.GetComponent<CropRenderer>();
+                r.growthStage = growthStage;
+                r.UpdateSprite();
             }
 
             Debug.Log($"Crop at {cellPosition} grew to stage {growthStage}");
         }
         else
         {
-            Debug.Log("Crop fully grown!");
+            Debug.Log("Crop fully grown.");
         }
     }
 }
