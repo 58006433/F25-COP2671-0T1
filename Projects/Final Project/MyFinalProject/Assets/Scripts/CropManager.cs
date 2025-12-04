@@ -77,6 +77,7 @@ public class CropManager : MonoBehaviour
 
     public void AddToPlantedCrops(CropBlock block)
     {
+        Debug.Log("Planted crops count: " + plantedCrops.Count);
         if (!plantedCrops.Contains(block))
             plantedCrops.Add(block);
     }

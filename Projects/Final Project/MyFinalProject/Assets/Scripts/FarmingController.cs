@@ -8,8 +8,9 @@ public class FarmingController : MonoBehaviour
 
     private CropBlock selectedBlock;
 
-    void OnEnable()
+    void Start()
     {
+        Debug.Log("FarmingController START");
         FarmingEvents.Instance.OnTillSoil.AddListener(TillSelectedSoil);
         FarmingEvents.Instance.OnWaterSoil.AddListener(WaterSelectedSoil);
         FarmingEvents.Instance.OnPlantSeed.AddListener(PlantSelectedSeed);
@@ -29,7 +30,6 @@ public class FarmingController : MonoBehaviour
         UpdateSelectedBlock();
     }
 
-    // Instead of mouse, use player position to select the block
     void UpdateSelectedBlock()
     {
         if (player == null) return;
@@ -56,6 +56,12 @@ public class FarmingController : MonoBehaviour
 
     void PlantSelectedSeed()
     {
+        Debug.Log("---- PLANT DEBUG ----");
+        Debug.Log("selectedBlock: " + selectedBlock);
+        Debug.Log("selectedSeed: " + selectedSeed);
+        Debug.Log("Block tilled: " + (selectedBlock != null && selectedBlock.isTilled));
+        Debug.Log("Block occupied: " + (selectedBlock != null && selectedBlock.isOccupied));
+
         if (selectedSeed != null && selectedBlock != null)
         {
             selectedBlock.PlantSeed(selectedSeed, cropManager.cropPrefab);

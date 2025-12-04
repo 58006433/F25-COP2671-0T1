@@ -12,6 +12,8 @@ public class FarmingEvents : MonoBehaviour
 
     private void Awake()
     {
+        Debug.Log("FarmingEvents Awake() called");
+
         if (Instance == null) Instance = this;
 
         // Initialize events if null

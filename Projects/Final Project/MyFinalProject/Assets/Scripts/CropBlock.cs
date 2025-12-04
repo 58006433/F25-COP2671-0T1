@@ -42,6 +42,8 @@ public class CropBlock
 
     public void PlantSeed(SeedPacket packet, GameObject cropPrefab)
     {
+        Debug.Log("PlantSeed() called on block " + cellPosition);
+
         if (!isTilled || isOccupied)
         {
             Debug.Log("Cannot plant here.");
