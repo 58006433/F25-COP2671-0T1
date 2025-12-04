@@ -35,6 +35,9 @@ public class CropRenderer : MonoBehaviour
         if (seed.producedItem != null)
             h.itemData = seed.producedItem;
 
+        // Auto-collect
+        h.Collect();
+
         block.isOccupied = false;
         block.seed = null;
 
