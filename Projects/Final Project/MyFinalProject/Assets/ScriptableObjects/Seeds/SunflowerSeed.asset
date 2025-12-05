@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: SunflowerSeed
   m_EditorClassIdentifier: 
   cropName: Sunflower
-  timePerStage: 20
+  timePerStage: 2
   growthSprites:
   - {fileID: 5403710888501315245, guid: 3c0fd9e79fa04564cb25b27e59aceaac, type: 3}
   - {fileID: -5824048891732118507, guid: 3c0fd9e79fa04564cb25b27e59aceaac, type: 3}
   - {fileID: 6614768778416726700, guid: 3c0fd9e79fa04564cb25b27e59aceaac, type: 3}
   - {fileID: 846023351496318078, guid: 3c0fd9e79fa04564cb25b27e59aceaac, type: 3}
   coverImage: {fileID: -6163400531934313660, guid: 3c0fd9e79fa04564cb25b27e59aceaac, type: 3}
-  harvestablePrefab: {fileID: 147247342922295338, guid: 953f7469141a97349b2da7f5907a0b47, type: 3}
+  harvestablePrefab: {fileID: 288927728088591044, guid: b62b865a8b40fcf43846f1e9f6bdc9c2, type: 3}
   producedItem: {fileID: 11400000, guid: e8e2128150061684dbddcf2b6613b7cb, type: 2}
