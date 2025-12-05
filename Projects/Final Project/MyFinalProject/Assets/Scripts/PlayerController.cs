@@ -28,4 +28,13 @@ public class PlayerController : MonoBehaviour
     {
         rb.linearVelocity = movement * movementSpeed;
     }
+
+    void OnTriggerEnter2D(Collider2D other)
+{
+    Harvestable harvestable = other.GetComponent<Harvestable>();
+    if (harvestable != null)
+    {
+        harvestable.Collect();
+    }
+}
 }
