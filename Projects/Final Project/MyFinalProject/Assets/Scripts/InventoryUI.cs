@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 public class InventoryUI : MonoBehaviour
 {
-    public GameObject slotPrefab; // Prefab with Image + Text
-    public Transform contentParent; // Panel with GridLayoutGroup
+    public GameObject slotPrefab;          // Prefab with Image + Text
+    public Transform contentParent;        // Panel with GridLayoutGroup
 
     private Dictionary<ItemData, GameObject> slotObjects = new Dictionary<ItemData, GameObject>();
 
@@ -19,26 +19,45 @@ public class InventoryUI : MonoBehaviour
 
     void UpdateUI()
     {
-        var items = InventorySystem.Instance.GetAllItems();
+        if (InventorySystem.Instance == null) return;
 
-        // Add or update slots
-        foreach (var kvp in items)
+        var currentItems = InventorySystem.Instance.GetAllItems();
+
+        var keysToRemove = new List<ItemData>();
+        foreach (var kvp in slotObjects)
+        {
+            if (!currentItems.ContainsKey(kvp.Key))
+            {
+                Destroy(kvp.Value);
+                keysToRemove.Add(kvp.Key);
+            }
+        }
+        foreach (var key in keysToRemove)
+            slotObjects.Remove(key);
+
+        foreach (var kvp in currentItems)
         {
             ItemData item = kvp.Key;
             InventoryItem invItem = kvp.Value;
 
+            GameObject slot;
             if (!slotObjects.ContainsKey(item))
             {
-                GameObject slot = Instantiate(slotPrefab, contentParent);
+                slot = Instantiate(slotPrefab, contentParent);
                 slotObjects[item] = slot;
             }
+            else
+            {
+                slot = slotObjects[item];
+            }
 
-            GameObject s = slotObjects[item];
-            Image icon = s.transform.Find("Icon").GetComponent<Image>();
-            Text qtyText = s.transform.Find("Quantity").GetComponent<Text>();
+            Image icon = slot.transform.Find("Icon").GetComponent<Image>();
+            Text qtyText = slot.transform.Find("Quantity").GetComponent<Text>();
 
-            icon.sprite = item.itemIcon;
-            qtyText.text = invItem.quantity.ToString();
+            if (icon != null) icon.sprite = item.itemIcon;
+            if (qtyText != null) qtyText.text = invItem.quantity.ToString();
         }
+
+        Debug.Log("Inventory UI updated. Total items: " + currentItems.Count);
     }
 }
