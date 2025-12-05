@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5909849394340799111}
   - component: {fileID: 288927728088591044}
   - component: {fileID: 1443552170882213521}
+  - component: {fileID: 2037388819645369546}
   m_Layer: 0
   m_Name: HarvestableSunflowerPrefab 1
   m_TagString: Untagged
@@ -166,3 +167,30 @@ PolygonCollider2D:
       - {x: 0.45302773, y: -0.2473774}
       - {x: 0.2473526, y: -0.059358597}
   m_UseDelaunayMesh: 0
+--- !u!50 &2037388819645369546
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9109526390844734035}
+  m_BodyType: 0
+  m_Simulated: 0
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 0.0001
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

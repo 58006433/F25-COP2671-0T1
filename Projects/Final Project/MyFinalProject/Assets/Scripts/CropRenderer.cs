@@ -29,19 +29,21 @@ public class CropRenderer : MonoBehaviour
     {
         if (!fullyGrown) return;
 
-        Harvestable h = Instantiate(seed.harvestablePrefab, transform.position, Quaternion.identity);
+    // Spawn a Harvestable in the world
+    Harvestable h = Instantiate(seed.harvestablePrefab, transform.position, Quaternion.identity);
 
-        // Assign item identity
-        if (seed.producedItem != null)
-            h.itemData = seed.producedItem;
+    // Assign item identity
+    if (seed.producedItem != null)
+        h.itemData = seed.producedItem;
 
-        // Auto-collect
-        h.Collect();
+    // no auto-collect here anymore
 
-        block.isOccupied = false;
-        block.seed = null;
+    // Mark block as free
+    block.isOccupied = false;
+    block.seed = null;
 
-        Destroy(gameObject);
+    // Destroy the crop object
+    Destroy(gameObject);
     }
 
 }

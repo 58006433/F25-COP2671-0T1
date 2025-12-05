@@ -34,7 +34,9 @@ public class FarmingController : MonoBehaviour
     {
         if (player == null) return;
 
-        Vector3Int cell = cropManager.farmingTilemap.WorldToCell(player.position);
+        Vector3 targetPos = player.position + Vector3.down;
+
+        Vector3Int cell = cropManager.farmingTilemap.WorldToCell(targetPos);
         selectedBlock = cropManager.GetBlockAtCell(cell);
     }
 
